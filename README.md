@@ -1,7 +1,7 @@
 # Open5GS & OpenAirInterface UE / RAN, simple UPF by focous on accessing to File_sharing_Platform, Streaming and Sip_Call_Server Sample Configuration
 
 ## Table of Contents
-* [Introduction to 5GS Network Components Functionality](https://github.com/MahdiehPirmoradian/5gs/edit/main/README.md#introduction-to-5gs-network-components-functionality)
+* [Introduction to 5GS Network Components Functionality](https://github.com/MahdiehPirmoradian/5gs/blob/main/README.md#introduction-to-5gs-network-components-functionality)
 * [Design](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#design)
 * [Description of tap device](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#description-of-tap-device)
 * [Running Virtual Machines](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#running-virtual-machines)
