@@ -1,17 +1,20 @@
 # Open5GS & OpenAirInterface UE / RAN, simple UPF by focous on accessing to File_sharing_Platform, Streaming and Sip_Call_Server Sample Configuration
 
 ## Table of Contents
-* [Introduction to 5GS Network Components Functionality](https://github.com/MahdiehPirmoradian/5gs/blob/main/README.md#introduction-to-5gs-network-components-functionality)
+* [Introduction to 5GS Network Components Functionality](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#introduction-to-5gs-network-components-functionality)
 * [Design](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#design)
+* [Requirements](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#Requirements)
 * [Description of tap device](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#description-of-tap-device)
 * [Running Virtual Machines](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#running-virtual-machines)
 * [Configuring network setting of virtual machines](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring-network-setting-of-virtual-machines)
-* [Configuring 5G network elements](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring-5g-network-elements)
+* [Configuring 5G network Components](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring-5g-network-Components)
 * [Configuring U-Plane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring-u-plane)
-* [Changes in configuration files of Open5gs U-Plane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#changes-in-configuration-files-of-open5gs-u-plane)
+* [Configuring_UE_RAN](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring_ue_ran)
+* [Configuring Core_Plane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#configuring-core_plane)
 * [Running C-Plane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#running-c-plane)
 * [Adding UEs](https://github.com/FRA-UAS/mobcom-project-lte#adding-ues)
 * [Glossary](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#glossary)
+* [PacketTraces](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/README.md#PacketTraces)
 
 
 
@@ -54,8 +57,16 @@ Figure 1. Overall infrastructure
 ![Overal infrastructure](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Overall/infra.jpg)
 
 
-Figure 1 illustrates the overall setting used for the virtual machines to 
-setup the system.
+Figure 1 illustrates the overall setting used for the virtual machines to setup the system.
+
+
+Note that in our C-Plane machine Its asked to config SMF, NRF and PCF.
+This networked is configues to have access to Sip-Call-Server, Streaming and File-Sharing Service.
+
+
+# Requirements
+
+Here is the minimum requirements for our Network.
 
 Table 1. Virtual machines for the simulating of UE/RAN and deploying C-Plane and single U-Plane.
 
@@ -70,7 +81,6 @@ Table 1. Virtual machines for the simulating of UE/RAN and deploying C-Plane and
 
 The system ’s main IP address is 192.168.0.0/24, indicating that all machines within the system are interconnected via this designated network range. 
 
-Our C-Plane machine should have SMF/NRF/PCF.
 
 
 ## Description of tap device:
@@ -84,13 +94,13 @@ In virtualization environments, tap devices are used to connect virtual machines
 
 The exact number and configuration of tap devices used in Open5GS will depend on the specific use case and network topology being simulated.
 
-here according to the project description we configured 3 tap devices for each virtual machine.
+here according to the project description, we configured 2 tap devices for each virtual machine.
 
-for example each upf has 3 Tap devices because it has 3 interfaces N3, N4 and N6 respectively for connecting to OAI-RAN, 5GS-core-Network and Internet.
+for example, each upf has 3 Tap devices because it has 3 interfaces N3, N4 and N6 respectively for connecting to OAI-RAN, 5GS-core-Network and Internet.
 
-or UE-RAN has 5 tap devices because it has 5 interfaces named N1 for connecting UE from UE-RAN to the 5GS-Core-Network, N2 for connecting OAI-RAN from UE-RAN to the 5GS-Core-Network and N3 for connecting UE-RAN to the UPF.
+or UE-RAN has 3 tap devices because it has 3 interfaces named N1 for connecting UE from UE-RAN to the 5GS-Core-Network, N2 for connecting OAI-RAN from UE-RAN to the 5GS-Core-Network and N3 for connecting UE-RAN to the UPF.
 
-or C-Plane virtual machine has 5 tap devices because it has 5 interfaces named N1 for connecting to UE from UE-RAN, N2 for connecting to OAI-RAN from UE-RAN and N3 for connecting UE-RAN to the UPF.
+or C-Plane virtual machine has 3 tap devices because it has 3 interfaces named N1 for connecting to UE from UE-RAN, N2 for connecting to OAI-RAN from UE-RAN and N3 for connecting UE-RAN to the UPF.
 
 
 
@@ -103,12 +113,16 @@ In addition, to have access from this 5G network elements to the Internet.
 
 
 To create a tap devices we use the following script, which iterates for 
-10 times and create a new tap device in each iteration. We dedicate two 
+6 times and create a new tap device in each iteration. We dedicate two 
 tap devices for each virtual machine.
+
+
 ```bash
 sudo brctl addbr ggbr0
 sudo ip link set ggbr0 up
-for i in 1 2 3 4 5 6 7 8 9 10
+
+
+for i in 1 2 3 4 5 6 
 do
     sudo ip tuntap add dev ggtap$i mode tap user student
     sudo ip link set dev ggtap$i up
@@ -123,7 +137,7 @@ Here is the result of executing the above code
 ![TapDevicesInitialization](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Overall/ggtap.jpg)
 
 
-Note that each time after termination of your system you should run this code again because after system termination this settings will disapper.
+⭐ Note that each time after termination of your system you should run this code again because after system termination this settings will disapper.
 
 
 
@@ -202,12 +216,6 @@ This command requires root privileges, which is why sudo is used to run it with 
 
 ....................................................................................................................................................................................................................................
 
-We set the interfaces for each virtual machine: Here is the setting process for UERANSIM as an example
-
-
-![TapDevices](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Overall/Tapdevices.jpg)
-....................................................................................................................................................................................................................................
-
 
 As we run the script using the `ip` command, we can see the tap devices are 
 created and added to our bridge properly.
@@ -219,11 +227,19 @@ $ sudo ip addr show | egrep ggtap*
 138: ggtap4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
 139: ggtap5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
 141: ggtap6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
-142: ggtap7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
-143: ggtap8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
-144: ggtap9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
-145: ggtap10: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ggbr0 state UP group default qlen 1000
 ```
+
+....................................................................................................................................................................................................................................
+
+
+We set the interfaces for each virtual machine: Here is the setting process for UERANSIM as an example
+
+
+![TapDevices](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Overall/Tapdevices.jpg)
+
+
+
+....................................................................................................................................................................................................................................
 
 ## Running Virtual Machines 
 The following script is utilized for the purpose of running virtual machines, wherein it accepts 
@@ -294,6 +310,7 @@ qemu-system-x86_64 \
 stty "$STTY_SETTINGS"
 ```
 
+
 ## Configuring network setting of virtual machines 
 
 We set the ip addresses of the two interfaces our VMS have by adding the 
@@ -360,134 +377,17 @@ listening on ggtap2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 ```
 
 
-# Configuring 5G network elements
-
-
-## Configuring U-Plane
-
-
-➡ UPF (User Plane Function) is a key component in the architecture of 5G networks. It is responsible for forwarding user data (the "user plane") between the 5G Radio Access Network (RAN) and the core network. The UPF is the main point of interaction between the RAN and the core network, and it performs functions such as packet filtering, routing, and traffic management.
-
-The UPF is designed to handle the large amounts of data traffic generated by 5G devices and networks, and to ensure that this data is delivered quickly, reliably, and securely. The UPF is a critical component in enabling the high speeds and low latency that are key features of 5G networks.
-
-Fiigure 2. UPF [source](https://techcommunity.microsoft.com/t5/azure-for-operators-blog/what-is-the-5g-session-management-function-smf/ba-p/3693852)
-
-![UPF](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/upf.png)
-
-### Step1:
-
-....................................................................................................................................................................................................................................
-
-#### Changes in configuration files of Open5GS UPF:
-
-This is a configuration file written in YAML format. 
-It contains information about network settings for a certain application or system.
-
-
-By enetring upf.yaml and going to line 173, we have changed the ip address to the ip address that we considered for U-Plane. Which is the ip address of enp0s9 which we considered as 192.168.0.127.
 
 
 
-We change the IP addresses in `upf.yml` to the following values.
-
-
-
-```bash
-  1 upf:
-  2     pfcp:
-  3       - addr: 192.168.0.127
-  4     gtpu:
-  5       - addr: 192.168.0.127
-  6     subnet:
-  7       - addr: 10.45.0.1/16
-  8         dnn: internet1
-  9         dev: osgtun
-  10        addr: 10.46.0.1/16
-  11         dnn: voip
-  12        dev: osgtun1
-  13        addr: 10.45.0.1/16
-  14        dnn: streaming
-  15        dev: osgtun2
-  16    metrics:
-  17      - addr: 127.0.0.7
-  18        port: 9090
-
-```
-
-![UplaneUPF](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Uplane/UPFConfig.jpg)
-
-
-I have modified the upf.yml configuration file to prioritize Quality of Service (QoS) for SIP signaling and media traffic.
-
-
-Here's what each line means:
-
-It is a configuration file written in YAML format.
-It contains information about network settings for a certain application or system. (Here Sip_Call_Server)
-
-
-1) "upf" refers to a user plane function. This configuration is for a single UPF. 
-2) The UPF has a PFCP (Packet Forwarding Control Protocol) configuration.
-    The PFCP configuration has a single address (192.168.0.128).
-3) The UPF also has a GTP-U (GPRS Tunnelling Protocol - User Plane) configuration.
-     The GTP-U configuration also has a single address (192.168.0.127).
-4) The UPF has a subnet configuration with public addresses of ( 10.45.0.1/16, 10.46.0.1/16, 10.47.0.1/16). This address is the network address for a subnet with a subnet mask of 255.255.0.0. 
-    The subnet is associated with a Data Network Name (DNN) of internet1 for File_Sharing, Voip for Sip_Call_Server and Streaming for Streaming use, and is accessible through the devices osgtun, osgtun1 and osgtun2 respectively.
-    The subnet configuration also specifies a DNN.
-    The subnet configuration also specifies the device (osgtun2 for example) through which the subnet is accessible.
-5) The UPF has a metrics configuration with a single address (127.0.0.7) and a port (9090). This configuration could be used for monitoring or other management purposes.
-
-
-Hints:
-
-*  SIP clients usually use port number 5060 for non-encrypted signaling traffic(UDP) to connect to SIP servers and other SIP endpoints.
 
 
 ....................................................................................................................................................................................................................................
-
-#### Changes in configuration files of Open5GS UPF for the UPF:
 
 ### Tap device Configurations
 
 
-Config enp08
-
-
-at the time of configuration of osgtun I have received numerous errors the result of that was My user was guest after changing it to client I fixed the issue.
-
-....................................................................................................................................................................................................................................
-
-After Configuration by this command we have checked if the network interfaces Ip addresses has changed:
-
-```bash
-ip addr show
-```
-
-sudo ip link set osgtun up
-
-
-
-#### Changes in configuration files of Open5GS SGWU:
-
-
-
-```bash
- cd Projects/open5gs/install/etc/open5gs 
- vim sgwu.yaml
- 
- 
-```
-By enetring sgwu.yaml and going to line 98, we have changed the ip address to the ip address that we considered for sgwu of Sip U-Plane. Which is the ip address of enp0s8 which we considered as 192.168.0.123.
-
-
-![sgwuconfig](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/Uplane/SGWUConfig.jpg)
-
-....................................................................................................................................................................................................................................
-
-### Step2:
-
-
-Then we create a tap device inside `U-Plane` virtual machine using 
+hen we create a tap device inside `U-Plane` virtual machine using 
 the following command.
 
 ```bash
@@ -507,90 +407,12 @@ This command sets up NAT rules for traffic coming from the 10.47.0.0/16 subnet, 
 
 
 
-```
-cd Projects/Open5gs/install 
-```
 
-```
-tmux
-```
+at the time of configuration of osgtun I have received numerous errors the result of that was My user was guest after changing it to client I fixed the issue.
 
 
 
-
-
-* sgwu
-
-
-
-
-Here is the configuration:
-
-
-
-Here is the execution result:
-
-
-
-
-Now we run serving gateway uplane.
-
-```bash
- cd Projects/open5gs/install/bin 
- sudo ./open5gs-sgwud
-```
-Here is the execution result:
-
-
-![SGWUD](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/RunningServingGateway.png)
-
-* upf
-
-By enetring upf.yaml and going to line 173, we have changed the ip address to the ip address that we considered for upf of Sip U-Plane. Which is the ip address of enp0s9 which we considered as 192.168.0.128.
-
-
-Now we run upfd by:
-
-```bash
- cd Projects/open5gs/install/bin 
- sudo ./open5gs-upfd
-```
-Here is the execution result:
-
-
-![upfd](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/RunningUPFDofSIP.png)
-
-
-Now we run smfd by:
-
-```bash
- cd Projects/open5gs/install/bin 
- sudo ./open5gs-smfd
-```
-
-
-Here is the execution result:
-
-![SMFD](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/SMFD%20running%20afterOsgtunConfig.jpg)
-
-
-## Running C-Plane
-
-To check if the Open5GS is installed and its functions are working:
-
-```
-sudo service open5gs-amfd status
-```
-
-or
-
-```
-Systemctl status open5gs*
-```
-
-
-
-Here is the execution result:
+so till now a tap device is created.
 
 
 Then we should restart the network by command:
@@ -601,7 +423,7 @@ sudo systemctl restart networking
 ```
 
 
-so till now a tap device is created.
+
 
 after 
 
@@ -613,6 +435,223 @@ the networking service is restarted, which involves stopping the service, making
 
 
 
+After Configuration by this command we have checked if the network interfaces Ip addresses has changed:
+
+```bash
+ip addr show
+```
+
+sudo ip link set osgtun up
+
+
+..........................................................................................................................................................................
+
+# Prepairing Virtual Machines by Installing Open5gs and OpenAirInterface on them
+
+* On 2 of Virtual Machines (C-Plane and U-Plane) we install Open5GS
+* on UERAN machine we will install OpenAirInterface
+
+
+To check if the Open5GS is installed and its functions are working:
+
+```
+sudo service open5gs-amfd status
+```
+
+or
+
+```
+systemctl status open5gs*
+```
+
+
+
+..........................................................................................................................................................................
+
+# Configuring 5G network Components
+
+
+## Configuring_UE_RAN
+
+
+### Changes in configuration files of RAN:
+
+
+
+ * "rcc.band7.tm1.nfapi.conf"
+ 
+ 
+```
+cd Projects/enb/ci-scripts-conf_files
+vim rcc.band7.tm1.nfapi.conf
+```
+ 
+ 
+ Here the configured part is shows 
+ 
+ 
+
+![RANConfig](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/UERANSIM/OAI/rccbandtm1nfapi.jpg)
+
+![RANConfig1](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/UERANSIM/OAI/rccbandpart2.jpg)
+
+
+
+### Changes in configuration files of UE:  
+
+* "ue.nfapi.conf"
+
+```
+cd Projects/ue/ci-scripts/conf_files
+vim ue.nfapi.conf
+```
+
+ Here the configured part is shows
+
+
+![nfapi](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/UERANSIM/UE/nfapi.jpg)
+
+
+## Configuring Core_Plane
+
+
+* configuring mme
+
+
+```
+cd Projects/open5gs/install/etc/open5gs
+vim mme.yaml
+```
+
+Here the configured part is shows
+
+
+
+![mme](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/mme1.jpg)
+
+![mme1](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/mme2.png)
+
+
+* configuring sgwc
+
+
+```
+cd Projects/open5gs/install/etc/open5gs
+vim sgwc.yaml
+```
+
+Here the configured part is shows
+
+
+![sgwc](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/sgwc.jpg)
+
+![Sgwc1](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/sgwc1.jpg)
+
+
+
+* configuring smf
+
+
+```
+cd Projects/open5gs/install/etc/open5gs
+vim smf.yaml
+```
+
+Here the configured part is shows
+
+
+![smf](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/smf.jpg)
+
+![smf1](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/CorePlane/smf1.jpg)
+
+
+
+## Configuring U_Plane
+
+➡ UPF (User Plane Function) is a key component in the architecture of 5G networks. It is responsible for forwarding user data (the "user plane") between the 5G Radio Access Network (RAN) and the core network. The UPF is the main point of interaction between the RAN and the core network, and it performs functions such as packet filtering, routing, and traffic management.
+
+The UPF is designed to handle the large amounts of data traffic generated by 5G devices and networks, and to ensure that this data is delivered quickly, reliably, and securely. The UPF is a critical component in enabling the high speeds and low latency that are key features of 5G networks.
+
+
+By enetring upf.yaml and going to line 173, we have changed the ip address to the ip address that we considered for upf of Sip U-Plane. Which is the ip address of enp0s9 which we considered as 192.168.0.127.
+
+* configuring upf
+
+
+```
+cd Projects/open5gs/install/etc/open5gs
+vim upf.yaml
+```
+
+This is a configuration file written in YAML format. 
+It contains information about network settings for a certain application or system.
+
+
+```bash
+  1 upf:
+  2     pfcp:
+  3       - addr: 192.168.0.127
+  4     gtpu:
+  5       - addr: 192.168.0.127
+  6     subnet:
+  7       - addr: 10.45.0.1/16
+  8         dnn: streaming
+  9         dev: osgtun1
+  10        addr: 10.46.0.1/16
+  11         dnn: voip
+  12        dev: osgtun2
+  13        addr: 10.47.0.1/16
+  14        dnn: filesharing
+  15        dev: osgtun3
+  16    metrics:
+  17      - addr: 127.0.0.7
+  18        port: 9090
+
+```
+
+
+Here's what each line means:
+
+It is a configuration file written in YAML format.
+It contains information about network settings for a certain application or system. (Here Sip_Call_Server, FileSharing and Streaming)
+
+
+1) "upf" refers to a user plane function. This configuration is for a single UPF. 
+2) The UPF has a PFCP (Packet Forwarding Control Protocol) configuration.
+    The PFCP configuration has a single address (192.168.0.127).
+3) The UPF also has a GTP-U (GPRS Tunnelling Protocol - User Plane) configuration.
+     The GTP-U configuration also has a single address (192.168.0.127).
+4) The UPF has a subnet configuration with public addresses of ( 10.45.0.1/16, 10.46.0.1/16, 10.47.0.1/16). This address is the network address for a subnet with a subnet mask of 255.255.0.0. 
+    The subnet is associated with a Data Network Name (DNN) of filesharing for File_Sharing, Voip for Sip_Call_Server and Streaming for Streaming use, and is accessible through the devices osgtun3, osgtun2 and osgtun1 respectively.
+    The subnet configuration also specifies a DNN.
+    The subnet configuration also specifies the device (osgtun2 for example) through which the subnet is accessible.
+5) The UPF has a metrics configuration with a single address (127.0.0.7) and a port (9090). This configuration could be used for monitoring or other management purposes.
+
+
+Hints:
+
+*  SIP clients usually use port number 5060 for non-encrypted signaling traffic(UDP) to connect to SIP servers and other SIP endpoints.
+
+
+Here the configured part is shows
+
+![upf](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/UPlane/upf.jpg)
+
+
+* configuring sgwu
+
+
+```
+cd Projects/open5gs/install/etc/open5gs
+vim sgwu.yaml
+```
+
+
+By enetring sgwu.yaml and going to line 98, we have changed the ip address to the ip address that we considered for sgwu of U-Plane. Which is the ip address of enp0s8 which we considered as 192.168.0.122.
+
+Here the configured part is shows
+
+![sgw](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/NewVersion/NewVersion/UPlane/sgwu.jpg)
 
 
 ..........................................................................................................................................................................
@@ -659,6 +698,8 @@ Open5GS daemon v2.6.0-15-gb790572
 02/08 22:19:46.777: [pfcp] WARNING: [5] LOCAL  No Reponse. Give up! for step 1 type 5 peer [192.168.0.123]:8805 (../lib/pfcp/xact.c:619)
 02/08 22:19:46.777: [pfcp] WARNING: [6] LOCAL  No Reponse. Give up! for step 1 type 5 peer [192.168.0.124]:8805 (../lib/pfcp/xact.c:619)
 ```
+
+..........................................................................................................................................................................
 
 
 ## Adding UEs
@@ -848,6 +889,21 @@ of 5G networks. Network slicing allows different types of user traffic to be sep
 based on their specific requirements. The HSS is responsible for storing information about the network slices available 
 to each user and providing this information to the SMF, which is responsible for selecting the appropriate network 
 slice for each user session.
+
+
+
+# PacketTraces
+
+* Uplane and Coreplane
+
+
+![CorePlaneToUplane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/WiresharkDetails/CplaneUplane/cplaneuplane.jpg)
+
+
+* Enodeb to Core-lane
+
+![EnodeBtoCorePlane](https://github.com/FRA-UAS/mobcom-project-lte/blob/main/Figures/WiresharkDetails/enb-cplane/enb-cplane.jpg)
+
 
 
 ## Help and Suppurt
